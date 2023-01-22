@@ -1,22 +1,41 @@
 package smilearts.project.training2
 
-class RememberUtil {
+import android.content.Context
 
-    private var userName: String = ""
-    private var password: String = ""
+class RememberUtil(private val mContext: Context) {
 
-    public fun getRememberDetails() : ArrayList<String> {
-        var setString = arrayListOf<String>()
-        if (userName.isNotEmpty()) setString.add(userName)
-        else setString.add("Smile")
-        if (password.isNotEmpty()) setString.add(password)
-        else setString.add("123456")
-        return setString
+    companion object {
+        const val NAME_TAG = "Name"
+        const val USER_NAME_TAG = "UserName"
+        const val PASSWORD_TAG = "Password"
+        const val LOGIN_STATE_TAG = "LoginState"
     }
 
-    public fun setUserDetails(userName: String, password: String) {
-        this.userName = userName
-        this.password = password
+    var tempData = mContext.getSharedPreferences("SMILEDB", Context.MODE_PRIVATE)
+    var editor = tempData.edit()
+
+    fun getLoginState() : Boolean {
+        return tempData.getBoolean(LOGIN_STATE_TAG , false)
+    }
+
+    fun setLoginState(status: Boolean) {
+        editor.putBoolean(LOGIN_STATE_TAG, status).apply()
+        editor.commit()
+    }
+
+    fun setDetails(name: String, userName: String, password: String) {
+        editor.putString(NAME_TAG, name).apply()
+        editor.putString(USER_NAME_TAG, userName).apply()
+        editor.putString(PASSWORD_TAG, password).apply()
+        editor.commit()
+    }
+
+    fun getRememberDetails() : ArrayList<String> {
+        var userList = arrayListOf<String>()
+        userList.add(tempData.getString(USER_NAME_TAG,"null")!!) //0
+        userList.add(tempData.getString(PASSWORD_TAG,"null")!!) //1
+        userList.add(tempData.getString(NAME_TAG,"null")!!) //2
+        return userList
     }
 
 }
